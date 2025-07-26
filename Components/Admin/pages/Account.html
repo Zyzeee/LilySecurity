@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account Management</title>
+
+  <!-- External stylesheets -->
+  <link rel="stylesheet" href="../css/Account.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Page Wrapper -->
+  <div class="site-wrap" id="siteWrap">
+    
+    <!-- Sidebar Navigation -->
+    <nav class="site-nav" id="sidebar">
+      <div class="name">
+        <span class="logo-text">Lily Security</span>
+        <!-- Sidebar toggle button -->
+        <span class="sidebar-toggle" id="sidebarToggle">☰</span>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <ul>
+        <li class="active">
+          <a href="Admin.html">
+            <i class="fas fa-chart-line"></i>
+            <span>Admin Dashboard</span>
+          </a>
+          <ul>
+            <li><a href="Account.html"><span>Manage Accounts</span></a></li>
+            <li><a href="Adopt.html"><span>Manage Pets</span></a></li>
+          </ul>
+        </li>
+        <!-- Logout Link -->
+        <li>
+          <a href="../../Main/pages/Login.html">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Admin Table Section -->
+      <div class="container" id="adminContainer">
+        <h1>Admin Accounts</h1>
+        <table id="adminTable" class="left-align-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>UID</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Client Table Section -->
+      <div class="container" id="clientContainer">
+        <h1>Client Accounts</h1>
+        <table id="clientTable">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>UID</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Showing User Details -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>User Details</h2>
+      <div id="userDetails"></div>
+    </div>
+  </div>
+
+  <!-- Firebase and Account Management Script -->
+  <script type="module">
+    // Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue, remove, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+      authDomain: "lilysecurity-8d33e.firebaseapp.com",
+      databaseURL: "https://lilysecurity-8d33e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lilysecurity-8d33e",
+      storageBucket: "lilysecurity-8d33e.appspot.com",
+      messagingSenderId: "539326295680",
+      appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+    };
+
+    // Initialize Firebase App and Database
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Load and display admin/client accounts and their pending states
+    async function loadAccounts() {
+      const adminTable = document.querySelector("#adminTable tbody");
+      const clientTable = document.querySelector("#clientTable tbody");
+      adminTable.innerHTML = "";
+      clientTable.innerHTML = "";
+
+      const adminRef = ref(db, 'role/admin');
+      const clientRef = ref(db, 'role/client');
+      const pendingDonationRef = ref(db, 'pendingDonations');
+      const pendingAdoptionRef = ref(db, 'pendingAdoptions');
+
+      const pendingDonationEmails = new Set();
+      const pendingAdoptionEmails = new Set();
+
+      // Update both tables after checking for pending requests
+      function updateTables() {
+        // Admin Accounts Table
+        onValue(adminRef, (adminSnap) => {
+          adminTable.innerHTML = "";
+          adminSnap.forEach(child => {
+            const email = child.key.replace(/,/g, '.');
+            const user = child.val();
+            const hasPendingDonation = pendingDonationEmails.has(email);
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${email}</td>
+              <td>${user.uid}</td>
+              <td>
+                <div class="action-cell">
+                  ${hasPendingDonation ? '<span class="pending-label">Pending</span>' : ''}
+                </div>
+              </td>
+            `;
+            adminTable.appendChild(tr);
+          });
+        });
+
+        // Client Accounts Table
+        onValue(clientRef, (clientSnap) => {
+          clientTable.innerHTML = "";
+          clientSnap.forEach(child => {
+            const email = child.key.replace(/,/g, '.');
+            const user = child.val();
+            const hasPendingDonation = pendingDonationEmails.has(email);
+            const hasPendingAdoption = pendingAdoptionEmails.has(email);
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td class="clickable" data-key="${child.key}">${email}</td>
+              <td>${user.uid}</td>
+              <td>
+                <div class="action-cell">
+                  ${hasPendingAdoption 
+                    ? `<button class="approve-btn" data-email="${email}">Approve</button>`
+                    : hasPendingDonation 
+                    ? '<span class="pending-label">Pending</span>'
+                    : ''
+                  }
+                </div>
+              </td>
+            `;
+            clientTable.appendChild(tr);
+          });
+        });
+      }
+
+      // Load emails with pending donations
+      onValue(pendingDonationRef, (snapshot) => {
+        pendingDonationEmails.clear();
+        snapshot.forEach(child => {
+          const donation = child.val();
+          if (donation.email) pendingDonationEmails.add(donation.email);
+        });
+        updateTables();
+      });
+
+      // Load emails with pending adoptions
+      onValue(pendingAdoptionRef, (snapshot) => {
+        pendingAdoptionEmails.clear();
+        snapshot.forEach(child => {
+          const adoption = child.val();
+          if (adoption.email) pendingAdoptionEmails.add(adoption.email);
+        });
+        updateTables();
+      });
+    }
+
+    // Handle Approve Button Click
+    document.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("approve-btn")) {
+        const email = e.target.dataset.email;
+        const commaEmail = email.replace(/\./g, ',');
+        const pendingRef = ref(db, "pendingAdoptions");
+
+        onValue(pendingRef, async (snapshot) => {
+          const pendingList = snapshot.val();
+          for (const [key, val] of Object.entries(pendingList)) {
+            if (val.email === email && val.status === "pending") {
+              const confirmedRef = ref(db, "confirmedAdoptions");
+              await push(confirmedRef, { ...val, status: "approved" }); // Move to confirmed
+              await remove(ref(db, `pendingAdoptions/${key}`));         // Remove from pending
+              const notifyRef = ref(db, `notifications/${commaEmail}`);
+              await push(notifyRef, {
+                message: "Your adoption request has been approved!",
+                timestamp: Date.now()
+              });
+              e.target.remove(); // Remove approve button
+              alert(`Adoption approved for ${val.description}`);
+            }
+          }
+        }, { onlyOnce: true });
+      }
+    });
+
+    // Show User Info in Modal
+    document.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("clickable") && e.target.dataset.key) {
+        const userKey = e.target.dataset.key;
+        const userRef = ref(db, `role/client/${userKey}`);
+        onValue(userRef, (snapshot) => {
+          const data = snapshot.val();
+          if (!data) return;
+          const detailsHtml = Object.entries(data)
+            .map(([key, val]) => `<p><strong>${key}:</strong> ${val}</p>`)
+            .join("");
+          document.getElementById("userDetails").innerHTML = detailsHtml;
+          document.getElementById("userModal").style.display = "block";
+        }, { onlyOnce: true });
+      }
+    });
+
+    // Close modal on 'X' click
+    document.querySelector(".close").onclick = () => {
+      document.getElementById("userModal").style.display = "none";
+    };
+
+    // Close modal when clicking outside content
+    window.onclick = (e) => {
+      const modal = document.getElementById("userModal");
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    };
+
+    // Initial Load
+    loadAccounts();
+
+    // Sidebar Toggle Logic
+    const sidebar = document.getElementById("sidebar");
+    const siteWrap = document.getElementById("siteWrap");
+    const toggle = document.getElementById("sidebarToggle");
+
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+      siteWrap.classList.toggle("collapsed");
+    });
+  </script>
+</body>
+</html>

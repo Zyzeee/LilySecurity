@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donate</title>
+
+  <!-- External stylesheets -->
+  <link rel="stylesheet" href="../css/Donate.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Wrapper for entire site layout -->
+  <div class="site-wrap" id="siteWrap">
+    
+    <!-- Sidebar Navigation -->
+    <nav class="site-nav" id="sidebar">
+      <div class="name">
+        <span class="logo-text">Lily Security</span>
+        <!-- Toggle sidebar visibility -->
+        <span class="sidebar-toggle" id="sidebarToggle">☰</span>
+      </div>
+      <ul>
+        <li class="active">
+          <a href="Profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-tasks"></i><span>Activities</span></a>
+          <ul>
+            <li><a href="Adopts.html"><span>Adopt Pets</span></a></li>
+            <li><a href="Donate.html"><span>Donate Pets</span></a></li>
+          </ul>
+        </li>
+        <!-- donation modal -->
+        <li>
+          <a href="#" id="openModal"><i class="fas fa-hand-holding-usd"></i><span>Donation</span></a>
+        </li>
+        <li>
+          <a href="../../Main/pages/Login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Donation Form -->
+    <main>
+      <div class="container">
+        <h1>Donate a Pet</h1>
+        <form id="donateForm" class="donation-form">
+          <!-- Upload image input -->
+          <div class="form-group">
+            <label for="petImage"><i class="fas fa-image"></i> Upload Pet Image</label>
+            <input type="file" id="petImage" accept="image/*" required />
+          </div>
+          <!-- Description input -->
+          <div class="form-group">
+            <label for="description"><i class="fas fa-align-left"></i> Description</label>
+            <textarea id="description" placeholder="Describe your pet's age, breed, temperament..." required></textarea>
+          </div>
+          <!-- Submit button -->
+          <button type="submit"><i class="fas fa-paw"></i> Submit Donation</button>
+        </form>        
+      </div>
+    </main>
+  </div>
+
+  <!-- Popup notification for submission feedback -->
+  <div class="popup-notification" id="popupNotification">
+    <div class="popup-content">
+      <i class="fas fa-check-circle"></i>
+      <p>Donation submitted! Awaiting admin approval.</p>
+    </div>
+  </div>
+
+  <!-- Donation banking details modal -->
+  <div class="modal-blur" id="donationModal">
+    <div class="modal-content">
+      <!-- Close button -->
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h2>Banking Details</h2>
+      <p>Please donate to <strong>Lily Security</strong> using the QR code or the account info below.</p>
+      <div class="qr-display"></div>
+      <div class="bank-info">
+        <p><strong>Bank Name:</strong> Security Bank</p>
+        <p><strong>Account Name:</strong> Lily Security</p>
+        <p><strong>Account Number:</strong> 1234-5678-9012</p>
+      </div>
+      <button class="fake-donate" id="confirmDonation">I have donated</button>
+    </div>
+  </div>
+
+  <!-- Firebase & Logic Script -->
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    // Firebase config settings
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+      authDomain: "lilysecurity-8d33e.firebaseapp.com",
+      databaseURL: "https://lilysecurity-8d33e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lilysecurity-8d33e",
+      storageBucket: "lilysecurity-8d33e.appspot.com",
+      messagingSenderId: "539326295680",
+      appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+    };
+
+    // Initialize Firebase app
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Reference to donation form and current user email
+    const donateForm = document.getElementById("donateForm");
+    let currentUserEmail = null;
+
+    // Monitor auth state to get user email
+    onAuthStateChanged(auth, (user) => {
+      currentUserEmail = user ? user.email : null;
+    });
+
+    // Handle form submission
+    donateForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const file = document.getElementById("petImage").files[0];
+      const description = document.getElementById("description").value;
+      const submitButton = donateForm.querySelector("button[type='submit']");
+      submitButton.disabled = true;
+
+      // Check if user is logged in
+      if (!currentUserEmail) {
+        showPopup("You must be logged in to donate.");
+        submitButton.disabled = false;
+        return;
+      }
+
+      // Validate file and description
+      if (file && description) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          const base64Image = reader.result;
+
+          // Prepare data to be pushed
+          const donationData = {
+            imageUrl: base64Image,
+            description: description,
+            email: currentUserEmail,
+            approved: false
+          };
+
+          // Save to database under 'pendingDonations'
+          push(ref(db, "pendingDonations"), donationData)
+            .then(() => {
+              donateForm.reset(); // Clear form
+              showPopup("Donation submitted! Awaiting admin approval.");
+            })
+            .catch(() => {
+              showPopup("Error submitting donation.");
+            })
+            .finally(() => {
+              submitButton.disabled = false;
+            });
+        };
+        reader.readAsDataURL(file); // Convert image to base64
+      } else {
+        showPopup("Please select an image and enter a description.");
+        submitButton.disabled = false;
+      }
+    });
+
+    // Display temporary popup with message
+    function showPopup(message) {
+      const popup = document.getElementById("popupNotification");
+      popup.querySelector("p").textContent = message;
+      popup.style.display = "block";
+      setTimeout(() => popup.style.display = "none", 3000);
+    }
+
+    // Sidebar toggle logic
+    const sidebar = document.getElementById("sidebar");
+    const siteWrap = document.getElementById("siteWrap");
+    const toggle = document.getElementById("sidebarToggle");
+
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+      siteWrap.classList.toggle("collapsed");
+    });
+
+    // Modal popup logic
+    const openModal = document.getElementById("openModal");
+    const donationModal = document.getElementById("donationModal");
+    const closeModal = document.getElementById("closeModal");
+    const confirmDonation = document.getElementById("confirmDonation");
+
+    // Open modal
+    openModal.addEventListener("click", () => {
+      donationModal.style.display = "flex";
+    });
+
+    // Close modal
+    closeModal.addEventListener("click", () => {
+      donationModal.style.display = "none";
+    });
+
+    // Confirm donation
+    confirmDonation.addEventListener("click", () => {
+      donationModal.style.display = "none";
+      showPopup("Thank you for your donation!");
+    });
+
+    // Allow clicking outside modal to close it
+    donationModal.addEventListener("click", (e) => {
+    if (e.target === donationModal) {
+      donationModal.style.display = "none";
+    }
+  });
+  </script>
+</body>
+</html>

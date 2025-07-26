@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <!-- Link to the CSS file for this page -->
+  <link rel="stylesheet" href="../css/Register.css" />
+</head>
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="../../../Assets/logo.png" alt="Logo" class="logo-img" />
+      LILY SECURITY
+    </div>
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+    <ul class="nav-links">
+      <li><a href="Home.html">HOME</a></li>
+      <li><a href="Services.html">SERVICES</a></li>
+      <li><a href="About.html">ABOUT</a></li>
+      <li><a href="Login.html" class="login-btn">LOGIN</a></li>
+    </ul>
+  </nav>
+
+  <!-- Registration form -->
+  <main class="container">
+    <form class="register-form" id="register-form">
+      <h2>Welcome</h2>
+
+      <label for="username">Email</label>
+      <input type="text" id="username" name="username" placeholder="Enter your email" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required />
+
+      <!-- Verification resend with cooldown timer -->
+      <div class="resend-verification">
+        <a href="#" id="resend-verification">(<span id="timer">0</span>s) Verify email</a>
+      </div>      
+
+      <button type="submit" id="submit">Register</button>
+
+      <div class="register-link">
+        <span>Already have an account? </span>
+        <a href="Login.html">Login</a>
+      </div>
+    </form>
+  </main>
+
+  <!-- Notification area -->
+  <div id="notification" class="notification"></div>
+
+  <!-- Firebase Registration Logic -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+      authDomain: "lilysecurity-8d33e.firebaseapp.com",
+      databaseURL: "https://lilysecurity-8d33e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lilysecurity-8d33e",
+      storageBucket: "lilysecurity-8d33e.firebasestorage.app",
+      messagingSenderId: "539326295680",
+      appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // DOM Elements
+    const form = document.getElementById('register-form');
+    const resendBtn = document.getElementById('resend-verification');
+    const timerSpan = document.getElementById('timer');
+    const notification = document.getElementById('notification');
+    let cooldownInterval = null;
+
+    // Load cooldown on page refresh
+    window.addEventListener('load', () => {
+      const cooldownEndTime = localStorage.getItem('cooldownEnd');
+      if (cooldownEndTime) {
+        const remaining = Math.floor((parseInt(cooldownEndTime) - Date.now()) / 1000);
+        if (remaining > 0) {
+          startCooldown(remaining);
+        } else {
+          clearCooldown();
+        }
+      }
+    });
+
+    // Handle form submission and registration
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        showNotification("Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const safeEmail = email.replace(/\./g, ',');
+        const isAdmin = email.startsWith('aisat.');
+        const rolePath = isAdmin ? 'role/admin/' : 'role/client/';
+
+        await set(ref(db, rolePath + safeEmail), {
+          uid: user.uid,
+          email: user.email
+        });
+
+        await sendEmailVerification(user);
+        showNotification("Registration successful! Verification email sent.", true);
+
+        startCooldown(60);
+        form.reset();
+      } catch (error) {
+        if (error.code === "auth/weak-password") {
+          showNotification("Password is too weak. It must be at least 6 characters.");
+        } else {
+          showNotification(error.message);
+        }
+      }
+    });
+
+    // Handle resend verification email with cooldown
+    resendBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const user = auth.currentUser;
+
+      if (!user) {
+        showNotification("You must register or log in first.");
+        return;
+      }
+
+      const cooldownEnd = localStorage.getItem('cooldownEnd');
+      if (cooldownEnd && Date.now() < parseInt(cooldownEnd)) {
+        const remaining = Math.floor((parseInt(cooldownEnd) - Date.now()) / 1000);
+        showNotification(`Please wait ${remaining}s before resending the email.`);
+        return;
+      }
+
+      try {
+        await sendEmailVerification(user);
+        showNotification("Verification email sent!", true);
+        startCooldown(60);
+      } catch (error) {
+        showNotification(error.message);
+      }
+    });
+
+    // Start cooldown timer
+    function startCooldown(seconds) {
+      const endTime = Date.now() + seconds * 1000;
+      localStorage.setItem('cooldownEnd', endTime.toString());
+
+      resendBtn.style.pointerEvents = "none";
+      updateTimerText(seconds);
+
+      cooldownInterval = setInterval(() => {
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
+        if (remaining > 0) {
+          updateTimerText(remaining);
+        } else {
+          clearCooldown();
+        }
+      }, 1000);
+    }
+
+    // Reset cooldown
+    function clearCooldown() {
+      clearInterval(cooldownInterval);
+      localStorage.removeItem('cooldownEnd');
+      timerSpan.textContent = "0";
+      resendBtn.style.pointerEvents = "auto";
+    }
+
+    // Update timer display
+    function updateTimerText(value) {
+      timerSpan.textContent = value;
+    }
+
+    // Show success or error message
+    function showNotification(message, success = false) {
+      notification.textContent = message;
+      notification.style.backgroundColor = success ? "#28a745" : "#dc3545";
+      notification.classList.add("show");
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,390 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body and HTML styles */
+body {
+  background: #89909f;
+  font-size: 12px;
+  height: 100vh;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+/* Page layout with sidebar and content */
+.site-wrap {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Sidebar + content */
+  height: 100vh;
+  overflow: hidden;
+  transition: grid-template-columns 0.3s ease;
+}
+
+/* Adjust layout when sidebar is collapsed */
+.site-wrap.collapsed {
+  grid-template-columns: 80px 1fr;
+}
+
+/* Sidebar styles */
+.site-nav {
+  background: #404040;
+  color: white;
+  border-top-left-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  width: 320px;
+}
+
+/* Collapsed sidebar */
+.site-nav.collapsed {
+  width: 80px;
+}
+
+/* Hide text inside collapsed sidebar */
+.site-nav.collapsed .logo-text,
+.site-nav.collapsed ul li a span,
+.site-nav.collapsed ul ul a span {
+  display: none;
+}
+
+/* Sidebar links */
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+/* Sidebar list */
+.site-nav ul {
+  margin-bottom: auto;
+  list-style: none;
+  padding: 0;
+}
+
+/* Navigation items */
+.site-nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 2rem;
+  position: relative;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+/* Icon inside links */
+.site-nav ul li a i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Hover effect for links */
+.site-nav ul li a:hover,
+.site-nav ul li a:focus {
+  color: #4371c5;
+}
+
+/* Highlight active menu item */
+.site-nav ul li.active > a {
+  background: linear-gradient(to right, #101b2d, transparent);
+}
+
+/* Left border for active item */
+.site-nav ul li.active > a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #4676cd;
+  width: 5px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* Submenu indentation */
+.site-nav ul ul {
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Submenu link spacing */
+.site-nav ul ul a {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Sidebar header and toggle */
+.name {
+  font-size: 1.6rem;
+  margin: 2rem 0 1rem;
+  padding: 0 2rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Toggle icon */
+.sidebar-toggle {
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Main content container */
+main.container {
+  background: #eef1f5;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Page heading */
+h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #2c3e50;
+}
+
+/* List of pets */
+.pet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Card for each pet */
+.pet-card {
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Pet image */
+.pet-card img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+}
+
+/* Text info about the pet */
+.pet-details {
+  flex: 1;
+}
+
+/* Button to adopt a pet */
+.adopt-btn {
+  margin-top: 10px;
+  padding: 0.5rem 1rem;
+  font-size: 14px;
+  background-color: #4676cd;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Hover effect for adopt button */
+.adopt-btn:hover {
+  background-color: #365ca3;
+}
+
+/* Status labels */
+.pending-label {
+  display: inline-block;
+  margin-top: 10px;
+  color: #d9534f;
+  font-weight: bold;
+}
+
+.approved-label {
+  display: inline-block;
+  margin-top: 10px;
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Sidebar logo and text */
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Logo image */
+.sidebar-logo {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Center logo in collapsed state */
+.site-nav.collapsed .sidebar-logo {
+  margin: auto;
+  display: block;
+}
+
+/* Hide logo text when collapsed */
+.site-nav.collapsed .logo-text {
+  display: none;
+}
+
+/* Notification popup */
+.popup-notification {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  background: white;
+  color: #2c3e50;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  display: none;
+  z-index: 9999;
+  animation: popupFade 0.3s ease-out;
+  min-width: 250px;
+}
+
+/* Inside popup */
+.popup-notification .popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Icon inside popup */
+.popup-notification i {
+  font-size: 32px;
+  color: #4caf50;
+}
+
+/* Popup animation */
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translateY(-20%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Blur background for modal */
+.modal-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Modal window */
+.modal-content {
+  background: #fff;
+  padding: 40px 35px;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  text-align: center;
+  position: relative;
+}
+
+/* Modal title */
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #007bff;
+  font-size: 22px;
+}
+
+/* Modal description text */
+.modal-content p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* QR code inside modal */
+.qr-display {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px auto;
+  background-image: url('https://api.qrserver.com/v1/create-qr-code/?data=DonateToLilySecurity&size=200x200');
+  background-size: cover;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Bank info text */
+.bank-info {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.bank-info p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+/* Donate button */
+.fake-donate {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+/* Hover effect for donate button */
+.fake-donate:hover {
+  background-color: #218838;
+}
+
+/* Close button for modal */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}
+
+/* Fade-in animation for modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

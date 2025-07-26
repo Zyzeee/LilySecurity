@@ -1,0 +1,161 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body and HTML styles */
+html, body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbars on all browsers */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #404040;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  color: white;
+  position: relative;
+  border-bottom: 4px solid #1F51FF;
+  flex-wrap: wrap;
+}
+
+/* Logo container */
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Navigation links container */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+/* Navigation links appearance and effects */
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover {
+  color: #1F51FF;
+}
+
+.nav-links li a.active {
+  color: #1F51FF;
+}
+
+/* Featured section layout and heading */
+.featured-section {
+  margin: 80px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.featured-section h2 {
+  font-size: 30px;
+  margin-bottom: 40px;
+  color: #444;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.featured-section h2::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #999;
+  margin: 10px auto 0;
+  border-radius: 3px;
+}
+
+/* Container for service items */
+.service-boxes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+/* Single service box layout */
+.feature-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 800px;
+}
+
+/* Label area with skew effect */
+.label {
+  background-color: #222;
+  color: #fff;
+  padding: 20px 30px;
+  font-weight: bold;
+  transform: skew(-20deg);
+  min-width: 150px;
+  text-align: center;
+  font-size: 18px;
+  border: 2px solid #000;
+}
+
+.label span {
+  display: block;
+  transform: skew(20deg);
+}
+
+/* Optional slide-in animation for labels */
+@keyframes slideInFromLabel {
+  0% {
+    transform: translateX(-60%) skew(-20deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) skew(-20deg);
+    opacity: 1;
+  }
+}
+
+/* Description text styling with hover animation */
+.description {
+  background-color: #f2f2f2;
+  padding: 20px 30px;
+  flex-grow: 1;
+  border: 2px solid #000;
+  transform: skew(-20deg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.description:hover {
+  transform: scale(1.03) skew(-20deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.description p {
+  transform: skew(20deg);
+  font-size: 16px;
+  color: #333;
+  text-align: left;
+}

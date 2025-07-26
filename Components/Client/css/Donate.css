@@ -1,0 +1,381 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body and HTML styles */
+body {
+  background: #89909f;
+  font-size: 12px;
+  height: 100vh;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+/* Layout wrapper with sidebar and main content */
+.site-wrap {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Sidebar and content area */
+  height: 100vh;
+  overflow: hidden;
+  transition: grid-template-columns 0.3s ease;
+}
+
+/* Layout when sidebar is collapsed */
+.site-wrap.collapsed {
+  grid-template-columns: 80px 1fr;
+}
+
+/* Sidebar styling */
+.site-nav {
+  background: #404040;
+  color: white;
+  border-top-left-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  width: 320px;
+}
+
+/* Sidebar when collapsed */
+.site-nav.collapsed {
+  width: 80px;
+}
+
+/* Hide text elements when sidebar is collapsed */
+.site-nav.collapsed .logo-text,
+.site-nav.collapsed ul li a span,
+.site-nav.collapsed ul ul a span {
+  display: none;
+}
+
+/* Sidebar links */
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+/* Sidebar list styling */
+.site-nav ul {
+  margin-bottom: auto;
+  list-style: none;
+  padding: 0;
+}
+
+/* Sidebar link layout and spacing */
+.site-nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 2rem;
+  position: relative;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+/* Icon alignment in sidebar */
+.site-nav ul li a i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Hover effect on links */
+.site-nav ul li a:hover,
+.site-nav ul li a:focus {
+  color: #4371c5;
+}
+
+/* Active menu item styling */
+.site-nav ul li.active > a {
+  background: linear-gradient(to right, #101b2d, transparent);
+}
+
+/* Highlight bar for active item */
+.site-nav ul li.active > a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #4676cd;
+  width: 5px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* Submenu padding */
+.site-nav ul ul {
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Submenu link spacing */
+.site-nav ul ul a {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Sidebar header and toggle */
+.name {
+  font-size: 1.6rem;
+  margin: 2rem 0 1rem;
+  padding: 0 2rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Main content container */
+main {
+  background: #f3f5f9;
+  padding: 3rem 2rem;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+/* Centered content box */
+.container {
+  background: #ffffff;
+  padding: 3rem 3.5rem;
+  border-radius: 16px;
+  max-width: 600px;
+  margin: 40px auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Main form title */
+.container h1 {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #2c3e50;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Donation form layout */
+.donation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form group spacing */
+.donation-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Labels inside form */
+.donation-form label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 15px;
+}
+
+/* File input style */
+.donation-form input[type="file"] {
+  background-color: #f0f4f8;
+  border: 2px dashed #ccc;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: border 0.3s ease;
+}
+
+/* File input focus effect */
+.donation-form input[type="file"]:focus {
+  border-color: #4676cd;
+}
+
+/* Textarea styling */
+.donation-form textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9fafb;
+  transition: border 0.3s ease;
+  min-height: 120px;
+}
+
+/* Textarea focus effect */
+.donation-form textarea:focus {
+  border-color: #4676cd;
+  background-color: #fff;
+}
+
+/* Submit button */
+.donation-form button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Hover effect for button */
+.donation-form button:hover {
+  background-color: #388e3c;
+  transform: scale(1.02);
+}
+
+/* Click effect for button */
+.donation-form button:active {
+  transform: scale(0.98);
+}
+
+/* Fade-in animation for forms */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Popup notification box */
+.popup-notification {
+  position: fixed;
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  background: white;
+  color: #2c3e50;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  display: none;
+  z-index: 9999;
+  animation: popupFade 0.3s ease-out;
+  text-align: center;
+}
+
+/* Content inside popup */
+.popup-notification .popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Icon inside popup */
+.popup-notification i {
+  font-size: 32px;
+  color: #4caf50;
+}
+
+/* Popup fade animation */
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Modal background blur */
+.modal-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Modal box style */
+.modal-content {
+  background: #fff;
+  padding: 40px 35px;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  text-align: center;
+  position: relative;
+}
+
+/* Modal heading */
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #007bff;
+  font-size: 22px;
+}
+
+/* Modal paragraph text */
+.modal-content p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* QR code display */
+.qr-display {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px auto;
+  background-image: url('https://api.qrserver.com/v1/create-qr-code/?data=DonateToLilySecurity&size=200x200');
+  background-size: cover;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Bank info section inside modal */
+.bank-info {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.bank-info p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+/* Fake donate button */
+.fake-donate {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Modal close button */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}

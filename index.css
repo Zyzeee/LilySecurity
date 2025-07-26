@@ -1,0 +1,43 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Fullscreen centered layout */
+body {
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Wrapper for logo and loader */
+.container {
+  text-align: center;
+}
+
+/* Logo styling */
+.logo {
+  width: 250px;
+  margin-bottom: 30px;
+}
+
+/* Circular loader animation */
+.loader {
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  margin: 0 auto;
+  animation: spin 1s linear infinite;
+}
+
+/* Spin animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

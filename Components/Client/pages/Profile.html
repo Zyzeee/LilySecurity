@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile</title>
+
+  <!-- External stylesheets -->
+  <link rel="stylesheet" href="../css/Profile.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<!-- Success message box (hidden by default, shown after update or donation) -->
+<div class="success-message" id="successMessage">
+  <i class="fas fa-check-circle"></i> Profile updated successfully!
+</div>
+
+<!-- Main container wrapping sidebar and main content -->
+<div class="site-wrap" id="siteWrap">
+  <!-- Sidebar Navigation -->
+  <nav class="site-nav" id="sidebar">
+    <div class="name">
+      <span class="logo-text">Lily Security</span>
+      <!-- Sidebar toggle button -->
+      <span class="sidebar-toggle" id="sidebarToggle">☰</span>
+    </div>
+    <ul>
+      <!-- Active Profile Link -->
+      <li class="active">
+        <a href="Profile.html">
+          <i class="fas fa-user"></i>
+          <span>Profile</span>
+        </a>
+      </li>
+
+      <!-- Activities Dropdown -->
+      <li>
+        <a href="#">
+          <i class="fas fa-tasks"></i>
+          <span>Activities</span>
+        </a>
+        <ul>
+          <li><a href="Adopts.html"><span>Adopt Pets</span></a></li>
+          <li><a href="Donate.html"><span>Donate Pets</span></a></li>
+        </ul>
+      </li>
+
+      <!-- Donation Modal -->
+      <li>
+        <a href="#" id="donateNowBtn">
+          <i class="fas fa-hand-holding-usd"></i>
+          <span>Donation</span>
+        </a>
+      </li>
+
+      <!-- Logout Link -->
+      <li>
+        <a href="../../Main/pages/Login.html">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="row gutters">
+      <!-- Left Panel - User Overview -->
+      <div class="col left-panel">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="account-settings">
+              <div class="user-profile">
+                <div class="user-avatar">
+                  <i class="fas fa-user-circle"></i>
+                </div>
+                <!-- Display Name and Email -->
+                <h5 class="user-name" id="displayName">Full Name</h5>
+                <h6 class="user-email" id="displayEmail">Email Address</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Edit Form -->
+      <div class="col right-panel">
+        <div class="card h-100">
+          <div class="card-body">
+            <!-- Section 1: Personal Details -->
+            <div class="section">
+              <h6 class="section-title">Personal Details</h6>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fullName">Full Name</label>
+                  <input type="text" class="form-control" id="fullName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                  <label for="age">Age</label>
+                  <input type="text" class="form-control" id="age" placeholder="Enter age">
+                </div>
+                <div class="form-group">
+                  <label for="birthday">Birthday</label>
+                  <input type="date" class="form-control" id="birthday">
+                </div>
+                <div class="form-group">
+                  <label for="contact">Contact #</label>
+                  <input type="text" class="form-control" id="contact" placeholder="+63">
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" disabled>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Address -->
+            <div class="section">
+              <h6 class="section-title">Address</h6>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="house">Street / House No. / Brgy</label>
+                  <input type="text" class="form-control" id="house" placeholder="Enter address">
+                </div>
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" class="form-control" id="city" placeholder="Enter city">
+                </div>
+                <div class="form-group">
+                  <label for="province">Province</label>
+                  <input type="text" class="form-control" id="province" placeholder="Enter province">
+                </div>
+                <div class="form-group">
+                  <label for="zip">Zip Code</label>
+                  <input type="text" class="form-control" id="zip" placeholder="Enter zip">
+                </div>
+              </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="form-buttons">
+              <button type="button" class="btn save-btn" id="updateBtn">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Donation Modal -->
+<div class="modal-blur" id="donationModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeModal">&times;</span>
+    <h2>Banking Details</h2>
+    <p>Please donate to <strong>Lily Security</strong> using the QR code or the account info below.</p>
+    <div class="qr-display"></div>
+    <div class="bank-info">
+      <p><strong>Bank Name:</strong> Security Bank</p>
+      <p><strong>Account Name:</strong> Lily Security</p>
+      <p><strong>Account Number:</strong> 1234-5678-9012</p>
+    </div>
+    <button class="fake-donate" id="confirmDonation">I have donated</button>
+  </div>
+</div>
+
+<!-- Firebase + Profile Script -->
+<script type="module">
+  // Import Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+    authDomain: "lilysecurity-8d33e.firebaseapp.com",
+    databaseURL: "https://lilysecurity-8d33e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lilysecurity-8d33e",
+    storageBucket: "lilysecurity-8d33e.appspot.com",
+    messagingSenderId: "539326295680",
+    appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+  };
+
+  // Initialize Firebase services
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+
+  // DOM references
+  const displayName = document.getElementById("displayName");
+  const displayEmail = document.getElementById("displayEmail");
+  const emailField = document.getElementById("email");
+  const successBox = document.getElementById("successMessage");
+
+  // Auth state listener
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const email = user.email;
+      const safeEmail = email.replace(/\./g, ","); // Convert email to Firebase-safe path
+      const userRef = ref(db, `role/client/${safeEmail}`);
+
+      // Show email in profile
+      displayEmail.textContent = email;
+      emailField.value = email;
+
+      // Get and populate user data
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        displayName.textContent = data.fullName || "";
+        document.getElementById("fullName").value = data.fullName || "";
+        document.getElementById("age").value = data.age || "";
+        document.getElementById("birthday").value = data.birthday || "";
+        document.getElementById("contact").value = data.contact || "";
+        document.getElementById("house").value = data.house || "";
+        document.getElementById("city").value = data.city || "";
+        document.getElementById("province").value = data.province || "";
+        document.getElementById("zip").value = data.zip || "";
+      }
+
+      // Update profile button logic
+      document.getElementById("updateBtn").addEventListener("click", async () => {
+        const updatedData = {
+          fullName: document.getElementById("fullName").value,
+          age: document.getElementById("age").value,
+          birthday: document.getElementById("birthday").value,
+          contact: document.getElementById("contact").value,
+          house: document.getElementById("house").value,
+          city: document.getElementById("city").value,
+          province: document.getElementById("province").value,
+          zip: document.getElementById("zip").value,
+          email: email,
+        };
+
+        try {
+          await update(userRef, updatedData);
+          displayName.textContent = updatedData.fullName;
+          successBox.style.display = "flex";
+          setTimeout(() => {
+            successBox.style.display = "none";
+          }, 3000);
+        } catch (err) {
+          alert("Failed to update: " + err.message);
+        }
+      });
+    } else {
+      // Redirect to login if not authenticated
+      window.location.href = "../Login.html";
+    }
+  });
+
+  // Sidebar toggle
+  const sidebar = document.getElementById("sidebar");
+  const siteWrap = document.getElementById("siteWrap");
+  const toggle = document.getElementById("sidebarToggle");
+
+  toggle.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+    siteWrap.classList.toggle("collapsed");
+  });
+
+  // Donation modal logic
+  const donationModal = document.getElementById("donationModal");
+  const donateBtn = document.getElementById("donateNowBtn");
+  const closeModal = document.getElementById("closeModal");
+  const confirmDonation = document.getElementById("confirmDonation");
+
+  donateBtn.addEventListener("click", () => {
+    donationModal.style.display = "flex";
+  });
+
+  closeModal.addEventListener("click", () => {
+    donationModal.style.display = "none";
+  });
+
+  confirmDonation.addEventListener("click", () => {
+    donationModal.style.display = "none";
+    successBox.innerHTML = '<i class="fas fa-check-circle"></i> Thank you for your donation!';
+    successBox.style.display = "flex";
+    setTimeout(() => {
+      successBox.style.display = "none";
+    }, 3000);
+  });
+
+  // Allow clicking outside modal to close it
+  donationModal.addEventListener("click", (e) => {
+    if (e.target === donationModal) {
+      donationModal.style.display = "none";
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Adopt</title>
+
+  <!-- External stylesheets -->
+  <link rel="stylesheet" href="../css/Adopts.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+  <!-- Success popup notification -->
+  <div class="popup-notification" id="successPopup">
+    <div class="popup-content">
+      <i class="fas fa-check-circle"></i>
+      <p>Adoption request submitted! Please wait for admin approval.</p>
+    </div>
+  </div>
+
+  <!-- Main layout wrapper -->
+  <div class="site-wrap" id="siteWrap">
+
+    <!-- Sidebar navigation -->
+    <nav class="site-nav" id="sidebar">
+      <div class="name">
+        <span class="logo-text">Lily Security</span>
+        <!-- Sidebar toggle button -->
+        <span class="sidebar-toggle" id="sidebarToggle">☰</span>
+      </div>
+
+      <!-- Navigation menu -->
+      <ul>
+        <!-- Profile link -->
+        <li class="active">
+          <a href="Profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </li>
+        <!-- Activities with submenu -->
+        <li>
+          <a href="#"><i class="fas fa-tasks"></i><span>Activities</span></a>
+          <ul>
+            <li><a href="Adopts.html"><span>Adopt Pets</span></a></li>
+            <li><a href="Donate.html"><span>Donate Pets</span></a></li>
+          </ul>
+        </li>
+        <!-- Donation Modal -->
+        <li>
+          <a href="#" id="openModal"><i class="fas fa-hand-holding-usd"></i><span>Donation</span></a>
+        </li>
+        <!-- Logout link -->
+        <li>
+          <a href="../../Main/pages/Login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main content section -->
+    <main class="container">
+      <h1>Available Pets for Adoption</h1>
+      <!-- Dynamic pet list -->
+      <div id="approvedList" class="pet-list"></div>
+    </main>
+  </div>
+
+  <!-- Donation modal -->
+  <div class="modal-blur" id="donationModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h2>Banking Details</h2>
+      <p>Please donate to <strong>Lily Security</strong> using the QR code or the account info below.</p>
+      <div class="qr-display"></div>
+      <div class="bank-info">
+        <p><strong>Bank Name:</strong> Security Bank</p>
+        <p><strong>Account Name:</strong> Lily Security</p>
+        <p><strong>Account Number:</strong> 1234-5678-9012</p>
+      </div>
+      <button class="fake-donate" id="confirmDonation">I have donated</button>
+    </div>
+  </div>
+
+  <!-- Firebase and functionality scripts -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue, push, get } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    // Firebase config and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+      authDomain: "lilysecurity-8d33e.firebaseapp.com",
+      databaseURL: "https://lilysecurity-8d33e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lilysecurity-8d33e",
+      storageBucket: "lilysecurity-8d33e.appspot.com",
+      messagingSenderId: "539326295680",
+      appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const approvedList = document.getElementById("approvedList");
+
+    // Show temporary popup notification
+    function displayNotification(message) {
+      const notif = document.createElement("div");
+      notif.className = "popup-notification";
+      notif.innerHTML = `<div class="popup-content"><i class="fas fa-check-circle"></i><p>${message}</p></div>`;
+      document.body.appendChild(notif);
+      notif.style.display = "block";
+      setTimeout(() => notif.remove(), 3000);
+    }
+
+    // Load and display approved pets
+    function displayApprovedPets(userEmail) {
+      const refApproved = ref(db, "approvedDonations");
+      const refPending = ref(db, "pendingAdoptions");
+      const refConfirmed = ref(db, "confirmedAdoptions");
+
+      Promise.all([get(refPending), get(refConfirmed)]).then(([pendingSnap, confirmedSnap]) => {
+        const pending = pendingSnap.val() || {};
+        const confirmed = confirmedSnap.val() || {};
+        const pendingSet = new Set(), approvedSet = new Set();
+
+        // Store already requested pets
+        Object.values(pending).forEach(item => {
+          if (item.email === userEmail && item.status === "pending")
+            pendingSet.add(item.description + item.imageUrl);
+        });
+
+        // Store approved adoptions
+        Object.values(confirmed).forEach(item => {
+          if (item.email === userEmail && item.status === "approved")
+            approvedSet.add(item.description + item.imageUrl);
+        });
+
+        // Listen for approved pets and render them
+        onValue(refApproved, snap => {
+          approvedList.innerHTML = "";
+          const pets = snap.val();
+          if (!pets) {
+            approvedList.innerHTML = "<p>No approved pets available at the moment.</p>";
+            return;
+          }
+
+          // Generate pet cards
+          Object.entries(pets).forEach(([key, pet]) => {
+            const petKey = pet.description + pet.imageUrl;
+            const isPending = pendingSet.has(petKey);
+            const isApproved = approvedSet.has(petKey);
+            const div = document.createElement("div");
+            div.className = "pet-card";
+            div.innerHTML = `
+              <img src="${pet.imageUrl}" alt="Pet">
+              <div class="pet-details">
+                <p>${pet.description}</p>
+                ${isApproved
+                  ? '<span class="approved-label">Adoption Approved</span>'
+                  : isPending
+                    ? '<span class="pending-label">Pending Approval</span>'
+                    : `<button class="adopt-btn" data-id="${key}" data-description="${pet.description}" data-image="${pet.imageUrl}">Adopt</button>`}
+              </div>`;
+            approvedList.appendChild(div);
+          });
+
+          // Handle adopt button click
+          document.querySelectorAll(".adopt-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const description = btn.getAttribute("data-description");
+              const imageUrl = btn.getAttribute("data-image");
+              const adoptionRequest = {
+                imageUrl,
+                description,
+                email: userEmail,
+                status: "pending"
+              };
+              push(ref(db, "pendingAdoptions"), adoptionRequest).then(() => {
+                displayNotification("Adoption request submitted!");
+                displayApprovedPets(userEmail); // Refresh UI
+              });
+            });
+          });
+        });
+      });
+    }
+
+    // Load data if user is logged in
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        displayApprovedPets(user.email);
+      } else {
+        approvedList.innerHTML = "<p>Please log in to view adoptable pets.</p>";
+      }
+    });
+
+    // Sidebar toggle logic
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("sidebarToggle");
+    const siteWrap = document.getElementById("siteWrap");
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
+      siteWrap.classList.toggle("collapsed");
+    });
+
+    // Donation modal functionality
+    const openModal = document.getElementById("openModal");
+    const donationModal = document.getElementById("donationModal");
+    const closeModal = document.getElementById("closeModal");
+    const confirmDonation = document.getElementById("confirmDonation");
+
+    openModal.addEventListener("click", () => {
+      donationModal.style.display = "flex";
+    });
+    closeModal.addEventListener("click", () => {
+      donationModal.style.display = "none";
+    });
+    confirmDonation.addEventListener("click", () => {
+      donationModal.style.display = "none";
+      displayNotification("Thank you for your donation!");
+    });
+  </script>
+</body>
+</html>

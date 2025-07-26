@@ -1,0 +1,406 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body and HTML styles */
+body {
+  background: #89909f;
+  font-size: 12px;
+  height: 100vh;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+/* Main layout with sidebar and content */
+.site-wrap {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100vh;
+  overflow: hidden;
+  transition: grid-template-columns 0.3s ease;
+}
+
+/* Layout when sidebar is collapsed */
+.site-wrap.collapsed {
+  grid-template-columns: 80px 1fr;
+}
+
+/* Sidebar design */
+.site-nav {
+  background: #404040;
+  color: white;
+  border-top-left-radius: 2rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  width: 320px;
+}
+
+/* Sidebar width when collapsed */
+.site-nav.collapsed {
+  width: 80px;
+}
+
+/* Hide text when sidebar is collapsed */
+.site-nav.collapsed .logo-text,
+.site-nav.collapsed ul li a span,
+.site-nav.collapsed ul ul a span {
+  display: none;
+}
+
+/* Link styling inside sidebar */
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+/* Remove list style and spacing for nav items */
+.site-nav ul {
+  margin-bottom: auto;
+  list-style: none;
+  padding: 0;
+}
+
+/* Nav item layout and hover effect */
+.site-nav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 2rem;
+  position: relative;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+/* Icon alignment */
+.site-nav ul li a i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Hover effect */
+.site-nav ul li a:hover,
+.site-nav ul li a:focus {
+  color: #4371c5;
+}
+
+/* Active link background */
+.site-nav ul li.active > a {
+  background: linear-gradient(to right, #101b2d, transparent);
+}
+
+/* Active link side bar indicator */
+.site-nav ul li.active > a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #4676cd;
+  width: 5px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/* Sub-menu styles */
+.site-nav ul ul {
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.site-nav ul ul a {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Top section inside sidebar */
+.name {
+  font-size: 1.6rem;
+  margin: 2rem 0 1rem;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Sidebar toggle icon */
+.sidebar-toggle {
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+}
+
+/* Main content styling */
+main.main-content {
+  flex-grow: 1;
+  background: #f9fafc;
+  padding: 40px;
+  overflow-y: auto;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin: 20px;
+}
+
+/* Row layout */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Left and right panel sizing */
+.left-panel {
+  flex: 1;
+  min-width: 280px;
+}
+
+.right-panel {
+  flex: 2;
+  min-width: 300px;
+}
+
+/* Card style box */
+.card {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* User profile section */
+.user-profile {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.user-avatar i {
+  font-size: 90px;
+  color: #007b9e;
+}
+
+.user-name {
+  font-size: 20px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #9fa8b9;
+}
+
+/* Section titles */
+.section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  color: #007b9e;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Form layout using grid */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Form input container */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label styling */
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+/* Input field styling */
+.form-control {
+  border: 1px solid #cfd1d8;
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 10px;
+  background: #fff;
+  color: #2e323c;
+}
+
+/* Buttons in form */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Save button */
+.save-btn {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5dc;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to right, #101b2d, transparent);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to right, #101b2d, transparent);
+}
+
+/* Mobile responsive layout */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+}
+
+/* Success message popup */
+.success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+/* Animation for showing success message */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+}
+
+/* Modal blur background */
+.modal-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Modal content box */
+.modal-content {
+  background: #fff;
+  padding: 40px 35px;
+  border-radius: 12px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  text-align: center;
+  position: relative;
+}
+
+/* Modal heading */
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #007bff;
+  font-size: 22px;
+}
+
+/* Modal paragraph */
+.modal-content p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #555;
+}
+
+/* QR code display box */
+.qr-display {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px auto;
+  background-image: url('https://api.qrserver.com/v1/create-qr-code/?data=LilySecurityBankAccount123&size=200x200');
+  background-size: cover;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Bank info section */
+.bank-info {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.bank-info p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+/* Donate button */
+.fake-donate {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.fake-donate:hover {
+  background-color: #218838;
+}
+
+/* Close button for modal */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+
+  <!-- External stylesheets -->
+  <link rel="stylesheet" href="../css/Admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- Wrapper for Entire Page Content -->
+  <div class="site-wrap" id="siteWrap">
+
+    <!-- Sidebar Navigation -->
+    <nav class="site-nav" id="sidebar">
+
+      <!-- Header Section with Logo and Toggle Button -->
+      <div class="name">
+        <span class="logo-text">Lily Security</span>
+        <!-- Button to Toggle Sidebar Visibility -->
+        <span class="sidebar-toggle" id="sidebarToggle">☰</span>
+      </div>
+
+      <!-- Sidebar Menu Items -->
+      <ul>
+        <!-- Admin Dashboard Section -->
+        <li class="active">
+          <a href="#">
+            <i class="fas fa-chart-line"></i>
+            <span>Admin Dashboard</span>
+          </a>
+          <!-- Submenu for Admin Functions -->
+          <ul>
+            <li><a href="Account.html"><span>Manage Accounts</span></a></li>
+            <li><a href="Adopt.html"><span>Manage Pets</span></a></li>
+          </ul>
+        </li>
+
+        <!-- Logout Option -->
+        <li>
+          <a href="../../Main/pages/Login.html">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- JavaScript to Handle Sidebar Toggle -->
+  <script>
+    // Get elements
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const siteWrap = document.getElementById("siteWrap");
+
+    // Toggle 'collapsed' class when toggle button is clicked
+    sidebarToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed"); // Collapse/expand sidebar
+      siteWrap.classList.toggle("collapsed"); // Adjust layout accordingly
+    });
+  </script>
+
+</body>
+</html>

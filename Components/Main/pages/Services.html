@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services</title>
+  <!-- Link to the CSS file for this page -->
+  <link rel="stylesheet" href="../css/Home.css" />
+</head>
+<body>
+
+  <!-- Navigation bar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="../../../Assets/logo.png" alt="Logo" class="logo-img" />
+      LILY SECURITY
+    </div>
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+    <ul class="nav-links">
+      <li><a href="Home.html">HOME</a></li>
+      <li><a href="Services.html">SERVICES</a></li>
+      <li><a href="About.html">ABOUT</a></li>
+      <li><a href="Login.html" class="login-btn">LOGIN</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main content container -->
+  <div class="main-container">
+
+    <!-- Services section -->
+    <div class="featured-section">
+      <h2>Our Servies</h2>
+      <div class="service-boxes">
+
+        <!-- Service 1: Adoption counseling -->
+        <div class="feature-box">
+          <div class="label"><span>Adoption counseling offer</span></div>
+          <div class="description">
+            <p>One-on-one counseling to help adopters find the perfect pet for their family.</p>
+          </div>
+        </div>
+
+        <!-- Service 2: Donations -->
+        <div class="feature-box reverse">
+          <div class="description">
+            <p>Allow users to donate pet food, toys, and other essential supplies to pets in need.</p>
+          </div>
+          <div class="label"><span>Pet food and supplies donation</span></div>
+        </div>
+
+        <!-- Service 3: Virtual meet and greet -->
+        <div class="feature-box">
+          <div class="label"><span>Virtual pet meet and greet</span></div>
+          <div class="description">
+            <p>Allow potential adopters to video chat with pets to get a better sense of their personality.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Highlight active nav link based on current page -->
+  <script>
+    const links = document.querySelectorAll('.nav-links a');
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+  
+    links.forEach(link => {
+      const linkHref = link.getAttribute('href').toLowerCase();
+      if (linkHref === currentPage || (currentPage === '' && linkHref === 'home.html')) {
+        link.classList.add('active');
+      }
+    });
+  </script>
+  
+</body>
+</html>

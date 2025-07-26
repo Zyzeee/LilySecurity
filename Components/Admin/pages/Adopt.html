@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Approve Pets</title>
+
+  <!-- External stylesheets -->
+  <link rel="stylesheet" href="../css/Adopt.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<!-- Wrapper for Entire Page -->
+<div class="site-wrap" id="siteWrap">
+  
+  <!-- Sidebar Navigation -->
+  <nav class="site-nav" id="sidebar">
+    <div class="name">
+      <span class="logo-text">Lily Security</span>
+      <span class="sidebar-toggle" id="sidebarToggle">☰</span> <!-- Sidebar Toggle Button -->
+    </div>
+
+    <!-- Sidebar Links -->
+    <ul>
+      <li class="active">
+        <a href="#">
+          <i class="fas fa-chart-line"></i>
+          <span>Admin Dashboard</span>
+        </a>
+        <ul>
+          <li><a href="Account.html"><span>Manage Accounts</span></a></li>
+          <li><a href="Adopt.html"><span>Manage Pets</span></a></li>
+        </ul>
+      </li>
+      <!-- Logout Option -->
+      <li><a href="../../Main/pages/Login.html"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Section -->
+  <main class="container">
+    <h1>Pending Pet Donations</h1>
+    <!-- Container where pending pets will be loaded -->
+    <div id="pendingContainer"></div>
+  </main>
+</div>
+
+<!-- Firebase and Script for Handling Pets -->
+<script type="module">
+  // Import Firebase modules
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, onValue, remove, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+  // Firebase Configuration Object
+  const firebaseConfig = {
+    apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+    authDomain: "lilysecurity-8d33e.firebaseapp.com",
+    databaseURL: "https://lilysecurity-8d33e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lilysecurity-8d33e",
+    storageBucket: "lilysecurity-8d33e.appspot.com",
+    messagingSenderId: "539326295680",
+    appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+  };
+
+  // Initialize Firebase App
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const pendingContainer = document.getElementById("pendingContainer");
+
+  // Load all pending donations from database
+  const loadPendingDonations = () => {
+    const pendingRef = ref(db, 'pendingDonations');
+    onValue(pendingRef, (snapshot) => {
+      pendingContainer.innerHTML = ''; // Clear container before loading new data
+      if (snapshot.exists()) {
+        snapshot.forEach(child => {
+          const pet = child.val();
+          const key = child.key;
+
+          // Create a card for each pet
+          const div = document.createElement("div");
+          div.className = "pet-card";
+          div.innerHTML = `
+            <img src="${pet.imageUrl}" alt="Pet Image">
+            <div class="pet-details">
+              <p><strong>Description:</strong> ${pet.description}</p>
+              <p><strong>Donor:</strong> ${pet.email || "Unknown"}</p>
+            </div>
+            <div class="pet-actions">
+              <button class="accept" data-key="${key}" data-state="initial">Accept</button>
+              <button class="reject" data-key="${key}">Reject</button>
+            </div>
+          `;
+          pendingContainer.appendChild(div); // Add card to container
+        });
+      } else {
+        // If no data exists
+        pendingContainer.innerHTML = '<p>No pending donations found.</p>';
+      }
+    });
+  };
+
+  // Event Listener for Accept/Reject buttons
+  document.addEventListener("click", (e) => {
+    const key = e.target.dataset.key;
+
+    // Handle Accept Button Logic
+    if (e.target.classList.contains("accept")) {
+      const currentState = e.target.dataset.state;
+
+      // First click - change to confirm state
+      if (currentState === "initial") {
+        e.target.textContent = "Confirm";
+        e.target.dataset.state = "confirm";
+        e.target.style.backgroundColor = "#4caf50";
+        e.target.style.color = "#fff";
+      } 
+      // Second click - confirm donation approval
+      else if (currentState === "confirm") {
+        const petRef = ref(db, `pendingDonations/${key}`);
+        const approvedRef = ref(db, `approvedDonations/${key}`);
+
+        // Move data from pending to approved
+        onValue(petRef, (snapshot) => {
+          if (snapshot.exists()) {
+            set(approvedRef, snapshot.val()).then(() => {
+              remove(petRef); // Delete from pending
+            });
+          }
+        }, { onlyOnce: true });
+      }
+    }
+
+    // Handle Reject Button Logic
+    if (e.target.classList.contains("reject")) {
+      const confirmReject = confirm("Are you sure you want to reject this donation?");
+      if (!confirmReject) return;
+
+      const petRef = ref(db, `pendingDonations/${key}`);
+      remove(petRef); // Remove rejected pet
+    }
+  });
+
+  // Load pending donations when page loads
+  loadPendingDonations();
+
+  // Sidebar toggle button logic
+  const sidebar = document.getElementById("sidebar");
+  const sidebarToggle = document.getElementById("sidebarToggle");
+  const siteWrap = document.getElementById("siteWrap");
+
+  // Toggle sidebar collapsed state
+  sidebarToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+    siteWrap.classList.toggle("collapsed");
+  });
+</script>
+
+</body>
+</html>

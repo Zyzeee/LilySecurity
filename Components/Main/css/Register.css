@@ -1,0 +1,261 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body and HTML styles */
+html, body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbars on all browsers */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #404040;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  color: white;
+  position: relative;
+  border-bottom: 4px solid #1F51FF;
+  flex-wrap: wrap;
+}
+
+/* Logo container */
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: bold;
+  white-space: nowrap;
+  gap: 10px;
+}
+
+/* Logo image styling */
+.logo-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* Navigation link container */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+/* Navigation link appearance */
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+  color: #1F51FF;
+}
+
+/* Login button styling */
+.login-btn {
+  background-color: #007bff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Responsive menu icon */
+.menu-icon {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Hide menu toggle checkbox */
+#menu-toggle {
+  display: none;
+}
+
+/* Centered container for the form */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 70px);
+  padding: 20px;
+}
+
+/* Registration form styling */
+.register-form {
+  background-color: #404040;
+  border-radius: 20px;
+  padding: 40px 35px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: #fff;
+}
+
+/* Form title */
+.register-form h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Form labels */
+.register-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+/* Form input fields */
+.register-form input[type="text"],
+.register-form input[type="password"] {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 25px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #111;
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Placeholder text styling */
+.register-form input::placeholder {
+  color: #111;
+}
+
+/* Input focus effect */
+.register-form input:focus {
+  outline: none;
+  box-shadow: 0 0 8px rgba(74, 144, 226, 0.7);
+  background: #fff;
+  color: #111;
+}
+
+/* Resend verification link alignment */
+.register-form .resend-verification {
+  text-align: right;
+  margin-top: -20px;
+  margin-bottom: 20px;
+}
+
+/* Link styling */
+.register-form .resend-verification a,
+.register-form .register-link a {
+  color: #4a90e2;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+/* Link hover effect */
+.register-form .resend-verification a:hover,
+.register-form .register-link a:hover {
+  text-decoration: underline;
+}
+
+/* Submit button styling */
+.register-form button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6a82fb 0%, #fc5c7d 100%);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(252, 92, 125, 0.5);
+  transition: background 0.3s ease;
+}
+
+.register-form button:hover {
+  background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%);
+}
+
+/* Link below the form */
+.register-form .register-link {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: #404040;
+  }
+
+  #menu-toggle:checked + .menu-icon + .nav-links {
+    display: flex;
+  }
+
+  .menu-icon {
+    display: block;
+  }
+
+  .container {
+    padding: 30px 15px;
+    height: auto;
+  }
+
+  .register-form {
+    margin-top: 30px;
+  }
+}
+
+/* Notification toast styling */
+.notification {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #333;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  font-size: 0.95rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+/* Show notification */
+.notification.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <!-- Link to the CSS file for this page -->
+  <link rel="stylesheet" href="../css/Login.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="../../../Assets/logo.png" alt="Logo" class="logo-img" />
+      LILY SECURITY
+    </div>
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+    <ul class="nav-links">
+      <li><a href="Home.html">HOME</a></li>
+      <li><a href="Services.html">SERVICES</a></li>
+      <li><a href="About.html">ABOUT</a></li>
+      <li><a href="Login.html" class="login-btn">LOGIN</a></li>
+    </ul>
+  </nav>
+
+  <!-- Login Form -->
+  <main class="container">
+    <form class="login-form" action="#" method="POST">
+      <h2>Welcome Back</h2>
+
+      <label for="username">Email</label>
+      <input type="text" id="username" name="username" placeholder="Enter your Email" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required />
+
+      <div class="forgot-password">
+        <a href="#" id="forgot-password">Forgot password?</a>
+      </div>      
+
+      <button type="submit">Log In</button>
+
+      <div class="register-link">
+        <span>Don't have an account yet? </span>
+        <a href="./Register.html">Register</a>
+      </div>
+    </form>
+  </main>
+
+  <!-- Notification Message -->
+  <div id="notification" class="notification"></div>
+
+  <!-- Firebase Login Logic -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB-Aen_ynqxuGlluhbAr2ytYekWQTL8rU",
+      authDomain: "lilysecurity-8d33e.firebaseapp.com",
+      projectId: "lilysecurity-8d33e",
+      storageBucket: "lilysecurity-8d33e.appspot.com",
+      messagingSenderId: "539326295680",
+      appId: "1:539326295680:web:ba9116b64b5a2c2a7bc065"
+    };
+
+    // Initialize Firebase app and authentication
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // DOM Elements
+    const loginForm = document.querySelector('.login-form');
+    const notification = document.getElementById('notification');
+    const forgotPasswordLink = document.getElementById('forgot-password');
+
+    // Handle Login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (!user.emailVerified) {
+          showNotification("Please verify your email before logging in.");
+          return;
+        }
+
+        showNotification("Login successful!");
+        setTimeout(() => {
+          if (email.startsWith("aisat.")) {
+            window.location.href = "../../Admin/pages/Admin.html";
+          } else {
+            window.location.href = "../../Client/pages/Profile.html";
+          }
+        }, 1500);
+
+      } catch (error) {
+        if (error.code === "auth/user-not-found") {
+          showNotification("Not Registered");
+        } else if (error.code === "auth/wrong-password") {
+          showNotification("Password Incorrect");
+        } else if (error.code === "auth/invalid-credential") {
+          showNotification("Not registered or Password incorrect. Try again.");
+        } else {
+          showNotification(error.message);
+        }
+      }
+    });
+
+    // Handle Password Reset
+    forgotPasswordLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('username').value.trim();
+
+      if (!email) {
+        showNotification("Please enter your email first.");
+        return;
+      }
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showNotification("Password reset email sent.");
+      } catch (error) {
+        if (error.code === "auth/user-not-found") {
+          showNotification("Email not registered.");
+        } else if (error.code === "auth/invalid-email") {
+          showNotification("Invalid email format.");
+        } else {
+          showNotification(error.message);
+        }
+      }
+    });
+
+    // Show Notification
+    function showNotification(message) {
+      notification.textContent = message;
+      notification.classList.add("show");
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+  </script>
+
+</body>
+</html>

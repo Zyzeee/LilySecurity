@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home</title>
+  <!-- Link to the CSS file for this page -->
+  <link rel="stylesheet" href="../css/Home.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="../../../Assets/logo.png" alt="Logo" class="logo-img" />
+      LILY SECURITY
+    </div>
+    <input type="checkbox" id="menu-toggle" />
+    <label for="menu-toggle" class="menu-icon">&#9776;</label>
+    <ul class="nav-links">
+      <li><a href="Home.html">HOME</a></li>
+      <li><a href="Services.html">SERVICES</a></li>
+      <li><a href="About.html">ABOUT</a></li>
+      <li><a href="Login.html" class="login-btn">LOGIN</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    
+    <!-- Welcome Banner -->
+    <div class="welcome-container">
+      <h1>Welcome Animal Lover</h1>
+      <p>Your trusted partner for your pets</p>
+      <a href="services.html" class="explore-btn">Explore Services</a>
+    </div>
+
+    <!-- Featured Services Section -->
+    <div class="featured-section">
+      <h2>Featured Services</h2>
+      <div class="service-boxes">
+
+        <!-- Service 1 -->
+        <div class="feature-box">
+          <div class="label"><span>Health Care</span></div>
+          <div class="description">
+            <p>This website provides services such as the information of the pets, where it’s from, and health care.</p>
+          </div>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="feature-box reverse">
+          <div class="description">
+            <p>Also provides the security and safety of pets that are going to be adopted and donated.</p>
+          </div>
+          <div class="label"><span>Safetyness</span></div>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="feature-box">
+          <div class="label"><span>Security</span></div>
+          <div class="description">
+            <p>Authenticator that requires users to validate their email through email verification upon creating account.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Highlight active nav link based on current page -->
+  <script>
+    const links = document.querySelectorAll('.nav-links a');
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+
+    links.forEach(link => {
+      const linkHref = link.getAttribute('href').toLowerCase();
+      if (linkHref === currentPage || (currentPage === '' && linkHref === 'home.html')) {
+        link.classList.add('active');
+      }
+    });
+  </script>
+  
+</body>
+</html>

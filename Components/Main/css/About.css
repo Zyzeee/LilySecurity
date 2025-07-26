@@ -1,0 +1,140 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body and HTML styles */
+html, body {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+/* Hide scrollbars on all browsers */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #404040;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  color: white;
+  border-bottom: 4px solid #1F51FF;
+  flex-wrap: wrap;
+}
+
+/* Logo container */
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: bold;
+  white-space: nowrap;
+  gap: 10px;
+}
+
+.logo-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* Logo container */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+  color: #1F51FF;
+}
+
+.login-btn {
+  background-color: #007bff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Hide mobile menu elements by default */
+#menu-toggle,
+.menu-icon {
+  display: none;
+}
+
+/* Content container */
+.container {
+  max-width: 1000px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 25px 30px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Headings */
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* Sections */
+.about p,
+.vision p {
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.team, .vision, .about {
+  margin-top: 50px;
+  margin-bottom: 60px;
+}
+
+/* Team section */
+.team-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-top: 20px;
+  justify-items: center;
+}
+
+.team-card {
+  background-color: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  padding: 20px;
+  width: 200px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 auto 10px auto;
+  border: 2px dashed #007bff;
+}
